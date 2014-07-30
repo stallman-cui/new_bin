@@ -1,4 +1,4 @@
-from mongo import MongoModel
+from common.mongo import MongoModel
 
 class GameLogModel(MongoModel):
     def get_db(self):

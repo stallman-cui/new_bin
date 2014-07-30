@@ -1,4 +1,4 @@
-from mongo import MongoModel
+from common.mongo import MongoModel
 
 class PlatModel(MongoModel):
     def get_db(self):
@@ -8,4 +8,7 @@ class PlatModel(MongoModel):
         return 'plat'
 
     def get_by_id(self, id):
-        return self.get_one(id = {'id' : id})
+        return self.get_one({'id' : id})
+
+if __name__ == "__main__":
+    print PlatModel().get_db()
