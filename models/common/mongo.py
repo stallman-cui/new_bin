@@ -16,7 +16,6 @@ class MongoModel:
         return MongoClient(uri)
    
     def __init__(self, name = 'default'):
-        #print(db_config)
         self.conn = self.connection(name)
          
     def get_db(self):
@@ -30,20 +29,17 @@ class MongoModel:
     def insert(self, data):
         db = self.prefix + self.get_db()
         coll = self.get_collection()
-
         self.conn[db][coll].insert(data)
 
     def delete(self, id_str):
         db = self.prefix + self.get_db()
         coll = self.get_collection()
-
         self.conn[db][coll].remove(ObjectId(id_str))
 
     def update(self, id_str, change = {}):
         db = self.prefix + self.get_db()
         coll = self.get_collection()
         search = {'_id' : ObjectId(id_str)}
-
         return self.conn[db][coll].update(search, {'$set': change})
     
     def get_list(self, search = {}, display = {}):
@@ -51,25 +47,43 @@ class MongoModel:
         db = self.prefix + self.get_db()
         coll = self.get_collection()
 
-        return self.conn[db][coll].find(search, display)
+        if len(display):
+            return self.conn[db][coll].find(search, display)
+        return self.conn[db][coll].find(search)
 
     def get_one(self, search = {}, display = {}):
-        #print 'get_one: \n', search, display
+        #print 'get_one: ', search, display
         db = self.prefix + self.get_db()
         coll = self.get_collection()
 
-        return self.conn[db][coll].find_one(search, display)
+        if len(display):
+            return self.conn[db][coll].find_one(search, display)
+        return self.conn[db][coll].find_one(search)
 
 if __name__ == '__main__':
     test = MongoModel()
     search = {
-        'ts' : {'$lt' :1402070400 , '$gt' :1401984000}
-    }
-    '''
-    display = {
-        'op.code' : 1
+        'op.code' : 'yuanbao_logchange',
+        'ts' : {'$gte' : 1406563200, '$lte' : 1406649599}
     }
 
+    
+    fix_data ={
+        'game': 'dl',
+        'area': '53bdefebdbdb674228a5018b', 
+        'uid': '140531009140149478', 
+        'ts': 1406563200, 
+        'plat': 2001
+    }
+
+
+    display = {
+        '_id',
+        'area',
+        #'op.code',
+        #'data.extra'
+    }
+    '''
     search_str = '53ce33bcf008b679dda5c220'
     doc = test.get_one(search_str, search = search, display = display)
     #print doc
@@ -80,9 +94,10 @@ if __name__ == '__main__':
     test.update(search_str, search = search, change = fix_data)
     '''
 
-    documents = test.get_list(search)
+    documents = test.get_list(search, display)
 
-    '''
+
     for doc in documents:
         print doc
-    '''
+
+

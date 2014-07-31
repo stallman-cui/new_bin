@@ -11,6 +11,9 @@ db_config = {
         }
     },
 
-    'secret' : 'mhis1,000kheros'
+    'ghoko' : {
+        'secret' : 'mhis1,000kheros',
+        'url' : 'http://127.0.0.1:3080'
+    }   
 }
 

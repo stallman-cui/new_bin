@@ -1,8 +1,16 @@
-from common.mongo import MongoModel
-from bson import ObjectId
-from models import areamodel, hostmodel
+#!/usr/bin/env python
+# This program 
+# 2014-07-30
+# author: zwcui   cuizhw@millionhero.com
 
-class AccountModel(MongoModel):
+from bson import ObjectId
+
+from common.mongo import MongoModel 
+from common.ghoko import GhokoModel
+from areamodel import AreaModel
+from hostmodel import HostModel
+
+class AccountModel(MongoModel, object):
     def get_db(self):
         return 'game'
 
@@ -10,25 +18,34 @@ class AccountModel(MongoModel):
         return 'account'
 
     def get_one(self, search = {}):
-        data = super.get_one(search)
+        data = super(AccountModel, self).get_one(search)
+        #data = self.get_one(search)
+        #print data
+
         if not data:
             s = {
-                'game' : search['game_tag'],
-                'plats' : search['plat_id'],
+                #'game' : search['game_tag'],
+                #'plats' : search['plat_id'],
                 '_id' :  ObjectId(search['area_id'])
             }
-            am = areamodel.AreaModel()
-            area = am.get_one(search = s)
-            if not area:
-                return {}
-            hm = hostmodel.HostModel()
-            host = hm.get_one(search = {'id' : area['host']})
-            if not host:
-                return {}
+            am = AreaModel()
+            area = am.get_one(s)
+            #print 'area: ', area
 
-            if search.get('info', 1):
-                search['info'] = ""
-            
+            if not area:
+                return 
+            hm = HostModel()
+            host = hm.get_one(search = {'id' : area['host']})
+            #print 'host: ', host
+
+            if not host:
+                return 
+                
+            if not search.get('info', 0):
+                search['info'] = ''
+
+            #print 'search: ', search
+
             params = {
                 'port'	: area['port']['mcs'],
                 'game'	: search['game_tag'],
@@ -38,5 +55,73 @@ class AccountModel(MongoModel):
                 'char' : search['char'],
                 'info' : search['info']
             }
+            
+            #print 'params: ', params
 
-            acct = 
+            acct = GhokoModel().get_account(host['ghoko'], params)
+            #print 'account acct: ', acct
+            if not acct or type(acct) == type(1):
+                return False
+
+            if acct.get('acct_id', 0):
+                id = acct['acct_id']
+            else:
+                id = ''
+            if acct.get('acct', 0):
+                name = acct['acct']
+            else:
+                name = ''
+
+            data = {
+                'game_tag' : search['game_tag'],
+                'plat_id' : search['plat_id'],
+                'area_id' : search['area_id'],
+                'account' : {
+                    'id' : id,
+                    'name' : name
+                    }
+            }
+            
+            for k, v in acct['char_msg'].items():
+                temp = {'id' : k}
+                for k1, v1 in v.items():
+                    ##if type(dict) == type(v1):
+                    temp[k1] = v1
+                data['char'] = temp
+
+            self.insert(data)
+            return data
+
+    def ctrl(search, data):
+        s = {
+            'game' : search['game_tag'],
+            'plats'	: search['plat_id'],
+            '_id' : ObjectId(search['area_id']),
+        }
+        am = AreaModel()
+        area= am.get_one(s)
+        if not area:
+            raise Exception("Area({s['id']}) not found!");
+
+        hm = HostModel()
+        host= hm.get_one({'id' : area['host']})
+        if not host:
+            raise Exception("Host({area['host']}) not found!");
+
+        data['port'] = area['port']['mcs'];
+        return GhokoModel.ctrl_account(host['ghoko'], data);
+
+if __name__ == '__main__':
+    test = AccountModel()
+
+    search = {
+        'info': {'acct': 1},
+        'account': {'id': '', 'name': ''}, 
+        'area_id': u'53bdefebdbdb674228a5018b', 
+        'char': {'id': u'140531009140149478', 'name': ''}, 
+        'game_tag': u'dl', 
+        'plat_id': 2001
+    }
+    
+    doc = test.get_one(search)
+    print doc

@@ -7,6 +7,7 @@
 
 import time
 import sys
+import json
 reload(sys)
 sys.setdefaultencoding('UTF-8')
 
@@ -14,6 +15,7 @@ sys.path.append('..')
 from models import gamelogmodel, platmodel, areamodel
 from models import analyticspaymodel, accountmodel
 FORMAT = '%Y-%m-%d'
+print time.ctime(), __file__, ' start...'
 
 if len(sys.argv) == 1:
 #    now = time.strftime(FORMAT, time.localtime())
@@ -40,54 +42,93 @@ user = {}
 
 for d in data:
 
-    try: 
-        d['data']['extra']['reqstr']
-    except KeyError, e:
+    if not 'reqstr' in d['data']['extra'].keys():
         continue
-    print 'begin: ', user
 
+    #print 'All the d: '
     area = d['area']
     plat = d['data']['CorpId']
-
-    '''
+    uid = d['data']['Uid']
     area_info = am.get_by_idstr(area)
     plat_info = pm.get_by_id(str(plat))
-
     game = area_info['game']
-    '''
-    uid = d['data']['Uid']
-    if not user.get(uid, 0):
-        area_info = am.get_by_idstr(area)
-        plat_info = pm.get_by_id(str(plat))
-        game = area_info['game']
-        
-        rest_yuanbao = 0
 
-        account = {'id' : '', 'name' : ''}
-        char = {'id' : uid, 'name' : ''}
+    #print 'before user: ', user
+    if not user.get(uid, 0):
+        
+        #print 'area_info: ', area_info
+        user[uid] = {
+            'grade' : d['data']['Grade'],
+            'name' : d['data']['Name'],
+            'count' : 0,
+            'amout' : 0,
+            'yuanbao' : 0
+        }
 
         search = {
             'game_tag' : game,
             'plat_id' : plat,
             'area_id' : area,
-            'account' : account,
-            'char' : char,
+            'account' : {'id' : '', 'name' : ''},
+            'char' : {'id' : uid, 'name' : ''},
             'info' : {'acct' : 1}
         }
-
+        #print 'search condition: ', search
         acm = accountmodel.AccountModel()
         try:
-            userdata = acm.get(search)
+            userdata = acm.get_one(search)
+            #output = json.dumps(userdata, indent=1)
+            #print 'user_pay: userdata \n', userdata
+            #print 'rest_yuanbao: ', userdata['char']['base_info']['rest_yuanbao']
+
         except Exception, e:
             print(search)
             print(e.message)
-            try:
-                userdata = acm.get(search)
-            except Exception,e:
-                print(search)
-                print e.message
-                continue
+            continue
+        
+        if userdata and userdata['char']['base_info'].get('rest_yuanbao', 0):
+            rest_yuanbao = userdata['char']['base_info']['rest_yuanbao']
+        else:
+            rest_yuanbao = 0
 
+        if userdata and userdata['char']['base_info'].get('birthday', 0):
+            reg_time = userdata['char']['base_info']['birthday']
+        else:
+            reg_time = 0
+
+        if userdata and userdata['char']['base_info'].get('recent_login', 0):
+            recent_login = userdata['char']['base_info']['recent_login']
+        else:
+            recent_login = 0
+
+        search = {
+            'data.CorpId' : int(plat),
+            "area" : area,
+            "op.code" : "yuanbao_logchange",
+            "data.Uid" : str(uid),
+            'ts' : {'$gte' : start, '$lte' : end}
+        }
+
+        documents = glm.get_list(search)
+        used_yuanbao = 0
+        if not documents:
+            for each_data in documents:
+                if each_data['data']['amount'] < 0:
+                    used_yuanbao += -each_data['data']['amount']
+
+
+        search = {
+            'game' : game,
+            'plat' : plat,
+            "area" : area,		
+            'uid' : str(uid)
+        }
+
+        pay_doc  = apm.get_one(search, {"_id", "firstPayGrade"})
+        if  pay_doc:
+            first_pay_grade = pay_doc['firstPayGrade']
+        else:
+            first_pay_grade = d['data']['Grade']
 
         user[uid] = {
             'game' : game,
@@ -95,48 +136,54 @@ for d in data:
             'plat' : plat,
             'grade' : d["data"]["Grade"],
             'name' : d["data"]["Name"],
+            'rest_yuanbao' : rest_yuanbao,
             'count' : 0,
             'amout' : 0,
-            'yuanbao' : 0
+            'yuanbao' : 0,
+            'reg_time' : reg_time,
+            'recent_login' : recent_login,
+            'used_yuanbao' : used_yuanbao,
+            'first_pay_grade' : first_pay_grade
         }
+    else:
+        user[uid]['count'] += 1
+        user[uid]['amout'] += d['data']['amount'] / 10
+        user[uid]['yuanbao'] += d['data']['amount']
+    #print 'user: ', user
 
-        
-
-    break
-    u = {}
-    user_plat = {}
-    user_area = {}
-
-    u['grade'] = d['data']['Grade']
-    u['name'] = d['data']['Name']
-
-
-    user_plat[uid] = u
-    user_area[plat] = user_plat
-    user[area] = user_area
-
-    '''
-    user[d['area']] = {
-        plat : {
-            uid : {
-                'grade' : d['data']['Grade'],
-                'name' : d['data']['Name']
-            }
-        }
+    fix_data ={
+            'game' : game,
+            'plat' : plat,
+            "area" : area,		
+            'uid' :  str(uid),
+            'ts' : start
     }
-    '''
-    if not 'count' in user[area][plat][uid].keys():
-        user[area][plat][uid]['count'] = 0
-    user[area][plat][uid]['count'] += 1
+
+    __id = apm.get_one(fix_data, {'_id', 'game'})
     
-    if not 'amout' in user[area][plat][uid].keys():
-        user[area][plat][uid]['amout'] = 0
-    user[area][plat][uid]['amout'] += d['data']['amount'] / 10
+    fix_data ={
+        'game' : game,
+        'plat' : plat,
+        'platname' : plat_info['name'],
+        'ts' : start,
+        "area" : area,		
+        'uid' :  str(uid),
+        'name' : str(user[uid]['name']),
+        'grade' : str(user[uid]['grade']),
+        'count' : int(user[uid]['count']),
+        'amout' : int(user[uid]['amout']),
+        'yuanbao' : int(user[uid]['yuanbao']),
+        'rest_yuanbao' : str(user[uid]['rest_yuanbao']),
+        'used_yuanbao' : str(user[uid]['used_yuanbao']),
+        'recent_login' : user[uid]['recent_login'],
+        'reg_time' : user[uid]['reg_time'],
+        'firstPayGrade' : str(user[uid]['first_pay_grade'])
+    }
 
-    if not 'yuanbao' in user[area][plat][uid].keys():
-	user[area][plat][uid]['yuanbao'] = 0
-    user[area][plat][uid]['yuanbao'] += d['data']['amount']
-
-    print 'end: ', user, '\n\n'
-
-print user
+    if  __id:
+        id = str(__id['_id'])
+        apm.update(id, fix_data)
+    else:
+        apm.insert(fix_data)
+print time.ctime(), __file__, ' stop...'
+#print 'user: \n', json.dumps(user, indent=2)
