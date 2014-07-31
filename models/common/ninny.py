@@ -21,7 +21,7 @@ class NinnyGhokoModel:
         #print 'ninny url:','{0}?secret={1}&{2}'.format(url, self._secret, urllib.urlencode(query))
         self._ch.setopt(pycurl.USERAGENT, 'GHoKo Client')
         #print 'query: ', query
-        print 'param: ', json.dumps(param, indent= 3)
+        #print 'param: ', json.dumps(param, indent= 3)
         if len(param):
             self._ch.setopt(pycurl.POST, True)
             self._ch.setopt(pycurl.POSTFIELDS, json.dumps(param))

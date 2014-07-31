@@ -19,32 +19,21 @@ class AccountModel(MongoModel, object):
 
     def get_one(self, search = {}):
         data = super(AccountModel, self).get_one(search)
-        #data = self.get_one(search)
-        #print data
 
         if not data:
             s = {
-                #'game' : search['game_tag'],
-                #'plats' : search['plat_id'],
                 '_id' :  ObjectId(search['area_id'])
             }
-            am = AreaModel()
-            area = am.get_one(s)
-            #print 'area: ', area
-
+            area = AreaModel().get_one(s)
             if not area:
                 return 
-            hm = HostModel()
-            host = hm.get_one(search = {'id' : area['host']})
-            #print 'host: ', host
 
+            host = HostModel().get_one(search = {'id' : area['host']})
             if not host:
                 return 
                 
             if not search.get('info', 0):
                 search['info'] = ''
-
-            #print 'search: ', search
 
             params = {
                 'port'	: area['port']['mcs'],
@@ -56,21 +45,17 @@ class AccountModel(MongoModel, object):
                 'info' : search['info']
             }
             
-            #print 'params: ', params
-
             acct = GhokoModel().get_account(host['ghoko'], params)
-            #print 'account acct: ', acct
             if not acct or type(acct) == type(1):
                 return False
 
+            id = ''
             if acct.get('acct_id', 0):
                 id = acct['acct_id']
-            else:
-                id = ''
+
+            name = ''
             if acct.get('acct', 0):
                 name = acct['acct']
-            else:
-                name = ''
 
             data = {
                 'game_tag' : search['game_tag'],
@@ -85,7 +70,6 @@ class AccountModel(MongoModel, object):
             for k, v in acct['char_msg'].items():
                 temp = {'id' : k}
                 for k1, v1 in v.items():
-                    ##if type(dict) == type(v1):
                     temp[k1] = v1
                 data['char'] = temp
 
@@ -98,13 +82,12 @@ class AccountModel(MongoModel, object):
             'plats'	: search['plat_id'],
             '_id' : ObjectId(search['area_id']),
         }
-        am = AreaModel()
-        area= am.get_one(s)
+
+        area= AreaModel().get_one(s)
         if not area:
             raise Exception("Area({s['id']}) not found!");
 
-        hm = HostModel()
-        host= hm.get_one({'id' : area['host']})
+        host = HostModel().get_one({'id' : area['host']})
         if not host:
             raise Exception("Host({area['host']}) not found!");
 
