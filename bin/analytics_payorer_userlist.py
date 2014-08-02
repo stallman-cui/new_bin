@@ -5,9 +5,7 @@
 # 2014-07-25
 # author: zwcui   cuizhw@millionhero.com
 
-import time
-import json
-import sys
+import time, json, sys
 reload(sys)
 sys.path.append('..')
 sys.setdefaultencoding('utf-8')
@@ -35,26 +33,26 @@ search = {
     'end' : end,
     'page.index' : -1
 }
-print search
 result  = pm.get_user_payment_list(search)
-pmresult = json.loads(result['body'])
+if result['status'] != 500:
+    pmresult = json.loads(result['body'])
+    for d in pmresult:
+        game = d['game']
+        area = d['area']
+        plat = d['plat']
+        if not area in game_info.keys():
+            if not game in user_pay_list.keys():
+                user_pay_list[game] = {}
 
-for d in pmresult:
-    game = d['game']
-    area = d['area']
-    plat = d['plat']
-    if not area in game_info.keys():
-        if not game in user_pay_list.keys():
-            user_pay_list[game] = {}
-        user_pay_list[game][area] = {plat : [d['user'],]}
-
-    else:
-        if not plat in user_pay_list[game][area].keys():
-            user_pay_list[game][area][plat] = [d['user'],]
+            user_pay_list[game][area] = {plat : [d['user'],]}
+            game_info[area] = 1
         else:
-            user_pay_list[game][area][plat].append(d['user'])
-    game_info[area] = game
-#print json.dumps(user_pay_list, indent=2)
+            if not plat in user_pay_list[game][area].keys():
+                user_pay_list[game][area][plat] = [d['user'],]
+            else:
+                if not d['user'] in user_pay_list[game][area][plat]:
+                    user_pay_list[game][area][plat].append(d['user'])
+
 for kgame, vgame in user_pay_list.items():
     for karea, varea in vgame.items():
         for kplat, vplat in varea.items():

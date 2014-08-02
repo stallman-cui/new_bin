@@ -17,3 +17,5 @@ db_config = {
     }   
 }
 
+CURL_ERROR = 500
+

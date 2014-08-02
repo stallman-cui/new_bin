@@ -8,6 +8,10 @@ import md5
 import pycurl, urllib, json, cStringIO
 from common.config import db_config
 
+### This class have a lot Repeat code with ninny.py,
+### it should be alter in future
+from common.config import CURL_ERROR
+
 class PaymentModel:
     def __init__(self):
         self.__ch = pycurl.Curl()
@@ -18,12 +22,12 @@ class PaymentModel:
         self.__secret = db_config['ghoko']['secret']
 
     def call(self, url, query = {}, param = {}):
+        #print 'param: ', json.dumps(param, indent=3)
         host = 'https://pay.millionhero.com'
         ts = str(int(time.time()))
         sign = md5.new(url + ts + self.__secret ).hexdigest()
-        #url = '{0}{1}?ts={2}&sign={3}&{4}'.format(host, url, ts, sign, urllib.urlencode(query))
-        url = 'https://pay.millionhero.com/b/e?ts=1406897759&sign=9c167b1c813e16acf099bb74194adac8&'
-        print 'url: ', url
+        url = '{0}{1}?ts={2}&sign={3}&{4}'.format(host, url, ts, sign, urllib.urlencode(query))
+
         self.__ch.setopt(pycurl.URL, url)
         self.__ch.setopt(pycurl.USERAGENT, 'MH Client')
         self.__ch.setopt(pycurl.SSL_VERIFYHOST, False)
@@ -40,8 +44,7 @@ class PaymentModel:
             }
         except pycurl.error, e:
             errno, errstr = e
-            result = {'status' : 500, 'body' :  errstr}
-        #print 'ninny result', result
+            result = {'status' : CURL_ERROR, 'body' :  errstr}
         return result
 
     def __del__(self):
