@@ -37,7 +37,7 @@ for v in data:
     search = {
         'area' : area
     }
-    level_data = {}
+
     total_user = {}
     game_info = {}
     users = gum.get_list(search)
@@ -74,59 +74,7 @@ for v in data:
 
             total_user[game][area][plat]['accts'].append(acct_id)
             total_user[game][area][plat][grade] += 1
-            
+
+    print json.dumps(total_user, indent=2)
     
-    
-
-
-
-
-
-
-
-
-'''
-for d in data:
-    area = d['area']
-    plat = d['data']['corpid']
-    if not area in game_info.keys():
-        area_info = am.get_by_idstr(area)
-        game_info[area] = area_info['game']
-        game = game_info[area]
-
-        if not game in create_role.keys():
-            create_role[game] = {}
-        
-        create_role[game][area] = {
-            plat : [d['data']['acct'],]
-        }
-
-    else:
-        game = game_info[area]
-        if not plat in create_role[game][area].keys():
-            create_role[game][area][plat] = [d['data']['acct'],]
-        else:
-            create_role[game][area][plat].append(d['data']['acct'])
-
-for kgame, vgame in create_role.items():
-    for karea, varea in vgame.items():
-        for kplat, vplat in varea.items():
-            # remove the same record in the list
-            user_list = list(set(vplat))
-            search = {
-                'game' : kgame,
-                'area' : karea,
-                'plat' : str(kplat),
-                'ts' : start
-            }
-            __id = curm.get_one(search, {'_id', 'game'})
-            search['count'] = len(user_list)
-            search['userlist'] = user_list
-
-            if __id:
-                mid = str(__id['_id'])
-                curm.update(mid, search)
-            else:
-                curm.insert(search)
-'''
 print time.ctime(), __file__, ' stop...'
