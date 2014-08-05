@@ -7,10 +7,12 @@
 
 import time
 import sys
+import json
+
 reload(sys)
 sys.path.append('..')
 sys.setdefaultencoding('utf-8')
-from models import gamelogmodel, areamodel, usercreaterolemodel
+from models import gameusermodel
 
 print time.ctime(), __file__, ' start...'
 FORMAT = '%Y-%m-%d'
@@ -23,18 +25,67 @@ today = time.strptime(now, FORMAT)
 end = int(time.mktime(today)) - 1
 start = end - 3600 * 24 + 1
 
-glm = gamelogmodel.GameLogModel()
-am = areamodel.AreaModel()
-curm = usercreaterolemodel.UserCreateRoleModel()
+gum = gameusermodel.GameUserModel('002_h_user')
 
-game_info = {}
-create_role = {}
-search = {
-    'op.code' : 'createrole_logcount',
-    'ts' : {'$gte' : start , '$lte' : end}
-}
-data = glm.get_list(search)
+f = open('./area_plat.js', 'r')
+data = json.load(f)
 
+for v in data:
+
+    game = v['game']
+    area = v['area']
+    search = {
+        'area' : area
+    }
+    level_data = {}
+    total_user = {}
+    game_info = {}
+    users = gum.get_list(search)
+    for u in users:
+        grade = u['data']['user']['Grade']
+        plat_arr = u['data']['user']['URS'].split('_')
+        size = len(plat_arr)
+        if size > 2:
+            acct_id = ''
+            for i in range(0, (size -2)):
+                acct_id += plat_arr[i]
+        else:
+            acct_id = plat_arr[0]
+            
+        plat = plat_arr[size -2]
+
+
+        if not area in game_info.keys():    
+            if not game in total_user.keys():
+                total_user[game] = {}
+            total_user[game][area] = {
+                plat : {
+                    'accts': [acct_id,],
+                    grade : 0
+                }
+            }
+            game_info[area] = 1
+        else:
+            if not plat in total_user[game][area].keys():
+                total_user[game][area][plat] = {
+                    'accts' : [acct_id,],
+                    grade : 0
+                }
+
+            total_user[game][area][plat]['accts'].append(acct_id)
+            total_user[game][area][plat][grade] += 1
+            
+    
+    
+
+
+
+
+
+
+
+
+'''
 for d in data:
     area = d['area']
     plat = d['data']['corpid']
@@ -77,5 +128,5 @@ for kgame, vgame in create_role.items():
                 curm.update(mid, search)
             else:
                 curm.insert(search)
-
+'''
 print time.ctime(), __file__, ' stop...'
