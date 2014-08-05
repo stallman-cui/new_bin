@@ -1,5 +1,5 @@
 from common.mongo import MongoModel
-from bson import ObjectId
+from bson.objectid import ObjectId
 
 class AreaModel(MongoModel):
     def get_db(self):

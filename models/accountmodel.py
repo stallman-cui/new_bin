@@ -3,7 +3,7 @@
 # 2014-07-30
 # author: zwcui   cuizhw@millionhero.com
 
-from bson import ObjectId
+from bson.objectid import ObjectId
 
 from common.mongo import MongoModel 
 from common.ghoko import GhokoModel

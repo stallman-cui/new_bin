@@ -3,7 +3,7 @@
 # 2014-07-24
 # author: zwcui   cuizhw@millionhero.com
 
-from bson import ObjectId
+from bson.objectid import ObjectId
 from pymongo import MongoClient
 
 from config import db_config
