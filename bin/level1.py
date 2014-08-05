@@ -62,7 +62,6 @@ for v in data:
         level_data[game][area][plat][grade] += 1
         if not acct_id in total_user[game][area][plat]:
             total_user[game][area][plat].append(acct_id)
-    break
     
 data = {
     'level_data' : level_data,
