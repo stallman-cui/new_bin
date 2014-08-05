@@ -14,19 +14,7 @@ sys.path.append('..')
 sys.setdefaultencoding('utf-8')
 from models import gameusermodel
 
-print time.ctime(), __file__, ' start...'
-FORMAT = '%Y-%m-%d'
-if len(sys.argv) == 1:
-#    now = time.strftime(FORMAT, time.localtime())
-    now = '2014-8-2'
-else:
-    now = sys.argv[1] 
-today = time.strptime(now, FORMAT)
-end = int(time.mktime(today)) - 1
-start = end - 3600 * 24 + 1
-
 gum = gameusermodel.GameUserModel('002_h_user')
-
 f = open('./area_plat.js', 'r')
 data = json.load(f)
 
@@ -38,9 +26,10 @@ for v in data:
         'area' : area
     }
 
+    level_data = {}
     total_user = {}
     game_info = {}
-    users = gum.get_list(search)
+    users = gum.get_list(search, {'data.user' : 1})
     for u in users:
         grade = u['data']['user']['Grade']
         plat_arr = u['data']['user']['URS'].split('_')
@@ -53,28 +42,30 @@ for v in data:
             acct_id = plat_arr[0]
             
         plat = plat_arr[size -2]
-
-
         if not area in game_info.keys():    
-            if not game in total_user.keys():
+            if not game in level_data.keys():
+                level_data[game] = {}
                 total_user[game] = {}
-            total_user[game][area] = {
-                plat : {
-                    'accts': [acct_id,],
-                    grade : 0
-                }
+            level_data[game][area] = {
+                plat : {grade : 0}
             }
+            total_user[game][area] = {plat : []}
             game_info[area] = 1
         else:
-            if not plat in total_user[game][area].keys():
-                total_user[game][area][plat] = {
-                    'accts' : [acct_id,],
-                    grade : 0
-                }
-
-            total_user[game][area][plat]['accts'].append(acct_id)
-            total_user[game][area][plat][grade] += 1
-
-    print json.dumps(total_user, indent=2)
+            if not plat in level_data[game][area].keys():
+                level_data[game][area][plat] = {grade : 0}
+                total_user[game][area][plat] = []
+            else:
+                if not grade in level_data[game][area][plat].keys():
+                    level_data[game][area][plat][grade] = 0
+                    
+        level_data[game][area][plat][grade] += 1
+        if not acct_id in total_user[game][area][plat]:
+            total_user[game][area][plat].append(acct_id)
+    break
     
-print time.ctime(), __file__, ' stop...'
+data = {
+    'level_data' : level_data,
+    'total_user' : total_user
+}    
+print json.dumps(data)

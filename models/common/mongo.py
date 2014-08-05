@@ -94,7 +94,7 @@ if __name__ == '__main__':
     test.update(search_str, search = search, change = fix_data)
     '''
 
-    documents = test.get_list(search, display)
+    documents = test.get_list(search)
 
 
     for doc in documents:
