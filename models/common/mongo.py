@@ -78,8 +78,8 @@ if __name__ == '__main__':
 
 
     display = {
-        '_id',
-        'area',
+        #'_id',
+        #'area',
         #'op.code',
         #'data.extra'
     }
