@@ -11,6 +11,7 @@ import sys
 reload(sys)
 sys.path.append('..')
 sys.setdefaultencoding('utf-8')
+
 from models import areamodel, servermodel, paymentmodel
 from models import usersignupmodel, userloginmodel, usercreaterolemodel
 
@@ -30,7 +31,6 @@ sm = servermodel.ServerModel()
 usm = usersignupmodel.UserSignupModel()
 ulm = userloginmodel.UserLoginModel()
 ucrm = usercreaterolemodel.UserCreateRoleModel()
-
 
 area = am.get_list()
 user_arr = {}
@@ -97,14 +97,14 @@ for item in area:
             apru_temp['count'] = 0
             apru_temp['nodup'] = 0
 
-	fixData = {
+	fix_data = {
             'area' : str(item['_id']),
             'game' : str(item['game']),
             'plat' : plat,
             'ts' : start
         }
-        __id = sm.get_one(fixData, {'_id', 'user'})
-        fixData = {
+        __id = sm.get_one(fix_data, {'_id', 'user'})
+        fix_data = {
             'game' : str(item['game']),
             'area' : str(item['_id']),
             'plat' : plat,
@@ -119,8 +119,8 @@ for item in area:
         
         if __id:
             id = str(__id['_id'])
-            sm.update(id, fixData)
+            sm.update(id, fix_data)
         else:
-            sm.insert(fixData)
+            sm.insert(fix_data)
 
 print time.ctime(), __file__, ' stop...'

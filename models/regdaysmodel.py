@@ -1,8 +1,8 @@
 from common.mongo import MongoModel
 
-class UserRetentionModel(MongoModel):
+class RegDaysModel(MongoModel):
     def get_db(self):
         return 'analytics'
 
     def get_collection(self):
-        return 'user_retention'
+        return 'reg_days'
