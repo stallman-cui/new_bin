@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 #-*-coding:utf-8-*-
-# This program is used to anlytics new created role, read data 
-# from gamelog, and write some infomation to analytics.user_create_role
+# This program is used to anlytics users activity from
+# gamelog, and write some data to analytics.user activity_day
 # 2014-07-25
 # author: zwcui   cuizhw@millionhero.com
 
-import time, sys, json, decimal
+import time, sys
 reload(sys)
 sys.path.append('..')
 sys.setdefaultencoding('utf-8')

@@ -5,16 +5,14 @@
 # 2014-07-25
 # author: zwcui   cuizhw@millionhero.com
 
-import time
-import sys
-import json
-
+import sys, json
 reload(sys)
 sys.path.append('..')
 sys.setdefaultencoding('utf-8')
-from models import gameusermodel
 
+from models import gameusermodel
 gum = gameusermodel.GameUserModel('002_h_user')
+
 f = open('./area_plat.js', 'r')
 data = json.load(f)
 

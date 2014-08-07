@@ -40,9 +40,8 @@ for d in data:
     plat = d['data']['corpid']
     if not area in game_info.keys():
         area_info = am.get_by_idstr(area)
-        if area_info:
-            game_info[area] = area_info['game']
-            game = game_info[area]
+        game_info[area] = area_info['game']
+        game = game_info[area]
 
         if not game in create_role.keys():
             create_role[game] = {}
