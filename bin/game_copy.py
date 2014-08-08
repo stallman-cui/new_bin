@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 #-*-coding:utf-8-*-
-# This program is used to anlytics mainline task from
-# gamelog, and write some data to analytics.mainline
+# This program is used to anlytics game copy from
+# gamelog, and write some data to analytics.gamecopy
+# and analytics.game_copy_userlist
 # 2014-07-25
 # author: zwcui   cuizhw@millionhero.com
 
@@ -33,7 +34,6 @@ game_info ={}
 gamecopy = {}
 yes_enter_user = {}
 yes_pass_user = {}
-
 search = {
     'op.code' : 'fuben_logchange',
     'ts' : {'$gte' : start, '$lte' : end}
@@ -43,48 +43,38 @@ data = glm.get_list(search)
 for d in data:
     if d['data']['amount'] != -1:
         continue
+    
     area = d['area']
     plat = d['data']['CorpId']
     acctid = d['data']['URS'].split('_')[0]
     copyid = d['data']['get_id']
 
-    if not area in game_info.keys():
+    if area not in game_info.keys():
         area_info = am.get_by_idstr(area)
         game_info[area] = area_info['game']
         game = game_info[area]
 
-        if not game in gamecopy.keys():
+        if game not in gamecopy.keys():
             gamecopy[game] = {}
             yes_enter_user[game] = {}
             yes_pass_user[game] = {}
 
         gamecopy[game][area] = {
-            plat : {
-                copyid : d['data']['extra']['name']
-            }
-        }
+            plat : {copyid : d['data']['extra']['name']}}
 
-        yes_enter_user[game][area] = {
-            plat : {
-                copyid : []
-            }
-        }
-        yes_pass_user[game][area] = {
-            plat : {
-                copyid : []
-            }
-        }
+        yes_enter_user[game][area] = {plat : {copyid : []}}
+        yes_pass_user[game][area] = {plat : {copyid : []}}
         
     else:
         game = game_info[area]
-        if not plat in gamecopy[game][area].keys():
+        if plat not in gamecopy[game][area].keys():
             gamecopy[game][area][plat] = {
                 copyid : d['data']['extra']['name']
             }
             yes_enter_user[game][area][plat] = {copyid : []}
             yes_pass_user[game][area][plat] = {copyid : []}
 
-        elif not copyid in gamecopy[game][area][plat].keys():
+        elif copyid not in gamecopy[game][area][plat].keys():
             gamecopy[game][area][plat][copyid] = d['data']['extra']['name']
             yes_enter_user[game][area][plat][copyid] = []
             yes_pass_user[game][area][plat][copyid] = []
@@ -96,14 +86,16 @@ for d in data:
     }
     
     re = gcum.get_one(search, {'enteruserlist', 'passuserlist'})
+    if re:
+        if 'enteruserlist' in re.keys():
+            yes_enter_user[game][area][plat][copyid] = re['enteruserlist']
+        if 'passuserlist' in re.keys():
+            yes_pass_user[game][area][plat][copyid] = re['passuserlist']
 
-    if re and 'enteruserlist' in re.keys():
-        yes_enter_user[game][area][plat][copyid] = re['enteruserlist']
-    if not acctid in yes_enter_user[game][area][plat][copyid]:
+    if acctid not in yes_enter_user[game][area][plat][copyid]:
         yes_enter_user[game][area][plat][copyid].append(acctid)
-    if re and 'passuserlist' in re.keys() and d['data']['extra']['iswin'] == 1:
-        yes_pass_user[game][area][plat][copyid] = re['passuserlist']
-    if not acctid in yes_pass_user[game][area][plat][copyid]:
+    if acctid not in yes_pass_user[game][area][plat][copyid] and \
+                               d['data']['extra']['iswin'] == 1:
         yes_pass_user[game][area][plat][copyid].append(acctid)
 
 for kgame, vgame in gamecopy.items():
