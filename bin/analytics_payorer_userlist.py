@@ -14,8 +14,7 @@ from models import areamodel, paymentmodel, payorderuserlistmodel
 print time.ctime(), __file__, ' start...'
 FORMAT = '%Y-%m-%d'
 if len(sys.argv) == 1:
-#    now = time.strftime(FORMAT, time.localtime())
-    now = '2014-8-2'
+    now = time.strftime(FORMAT, time.localtime())
 else:
     now = sys.argv[1] 
 today = time.strptime(now, FORMAT)
@@ -65,7 +64,7 @@ for kgame, vgame in user_pay_list.items():
                 'ts' : start
             }
 
-            __id = poulm.get_one(search, {'_id', 'game'})
+            __id = poulm.get_one(search, {'_id' : 1, 'game' : 1})
             search['count'] = len(user_list)
             search['userlist'] = user_list
         

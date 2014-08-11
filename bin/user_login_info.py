@@ -16,8 +16,7 @@ from models import gamelogmodel, areamodel, userlogininfomodel
 print time.ctime(), __file__, ' start...'
 FORMAT = '%Y-%m-%d'
 if len(sys.argv) == 1:
-#    now = time.strftime(FORMAT, time.localtime())
-    now = '2014-8-2'
+    now = time.strftime(FORMAT, time.localtime())
 else:
     now = sys.argv[1] 
 today = time.strptime(now, FORMAT)

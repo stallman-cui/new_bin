@@ -17,8 +17,7 @@ from models import gamecopymodel, gamecopyusermodel
 print time.ctime(), __file__, ' start...'
 FORMAT = '%Y-%m-%d'
 if len(sys.argv) == 1:
-#    now = time.strftime(FORMAT, time.localtime())
-    now = '2014-8-2'
+    now = time.strftime(FORMAT, time.localtime())
 else:
     now = sys.argv[1] 
 today = time.strptime(now, FORMAT)
@@ -85,7 +84,7 @@ for d in data:
         'copyid' : copyid
     }
     
-    re = gcum.get_one(search, {'enteruserlist', 'passuserlist'})
+    re = gcum.get_one(search, {'enteruserlist' : 1, 'passuserlist' : 1})
     if re:
         if 'enteruserlist' in re.keys():
             yes_enter_user[game][area][plat][copyid] = re['enteruserlist']
@@ -134,7 +133,7 @@ for kgame, vgame in gamecopy.items():
                     'name': vcopy,
                     'level' : kcopy
                 }
-                __id = gcm.get_one(fix_data, {'_id'})
+                __id = gcm.get_one(fix_data, {'_id' : 1})
                 fix_data['enter_user'] = len(acc)
                 fix_data['pass_user'] = len(fin)
 

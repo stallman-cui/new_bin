@@ -15,8 +15,7 @@ from models import gamelogmodel, areamodel, platmodel, payordermodel
 print time.ctime(), __file__, ' start...'
 FORMAT = '%Y-%m-%d'
 if len(sys.argv) == 1:
-#    now = time.strftime(FORMAT, time.localtime())
-    now = '2014-8-2'
+    now = time.strftime(FORMAT, time.localtime())
 else:
     now = sys.argv[1] 
 today = time.strptime(now, FORMAT)
@@ -55,7 +54,7 @@ for d in data:
         'plat' : plat,
         'orderid' : d['data']['extra']['reqstr']
     }
-    __id = pom.get_one(search, {'_id'})
+    __id = pom.get_one(search, {'_id' : 1})
     ## 充值前元宝
     search['paybeforeyuanbao'] = d['data']['extra']['new_yuanbao'] - d['data']['amount']
     search['payafteryuanbao'] = d['data']['extra']['new_yuanbao']

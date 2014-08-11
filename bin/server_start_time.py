@@ -15,8 +15,7 @@ from models import gamelogmodel, areamodel, serverstartmodel
 print time.ctime(), __file__, ' start...'
 FORMAT = '%Y-%m-%d'
 if len(sys.argv) == 1:
-#    now = time.strftime(FORMAT, time.localtime())
-    now = '2014-8-2'
+    now = time.strftime(FORMAT, time.localtime())
 else:
     now = sys.argv[1] 
 today = time.strptime(now, FORMAT)
@@ -63,7 +62,7 @@ for kgame, vgame in server_start.items():
                 'area' : karea,
                 'plat' : str(kplat)
             }
-            __id = sstm.get_one(fix_data, {'_id', 'area'})
+            __id = sstm.get_one(fix_data, {'_id' : 1, 'area' : 1})
             fix_data['server_start_time'] = vplat
             if not __id:
                 sstm.insert(fix_data)

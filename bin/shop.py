@@ -15,8 +15,7 @@ from models import gamelogmodel, areamodel, propmodel, propusermodel
 print time.ctime(), __file__, ' start...'
 FORMAT = '%Y-%m-%d'
 if len(sys.argv) == 1:
-#    now = time.strftime(FORMAT, time.localtime())
-    now = '2014-8-2'
+    now = time.strftime(FORMAT, time.localtime())
 else:
     now = sys.argv[1] 
 today = time.strptime(now, FORMAT)
@@ -100,7 +99,7 @@ for kgame, vgame in prop.items():
                     'buyitemno' : kitem,
                     'ts' : start
                 }
-                __id = pum.get_one(search, {'_id'})
+                __id = pum.get_one(search, {'_id' : 1})
                 search['userlist'] = vitem['userlist']
                 
                 fix_data = {

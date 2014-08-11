@@ -16,8 +16,7 @@ from models import usercreaterolemodel, userloginmodel, usernumretentionmodel
 print time.ctime(), __file__, ' start...'
 FORMAT = '%Y-%m-%d'
 if len(sys.argv) == 1:
-#    now = time.strftime(FORMAT, time.localtime())
-    now = '2014-8-3'
+    now = time.strftime(FORMAT, time.localtime())
 else:
     now = sys.argv[1] 
 today = time.strptime(now, FORMAT)
@@ -54,8 +53,8 @@ for item in area:
         }
 
         # The number of users create role and login in yesterday
-        create_role_count = ucrm.get_one(search, {'_id', 'count'})
-        user_login_arr = ulm.get_one(search, {'_id', 'userlist'})
+        create_role_count = ucrm.get_one(search, {'_id' : 1, 'count' : 1})
+        user_login_arr = ulm.get_one(search, {'_id' : 1, 'userlist' : 1})
         if create_role_count:
             user_total = create_role_count['count']
         else:
@@ -68,7 +67,7 @@ for item in area:
             'ts' : start
         }
         
-        __id = unrm.get_one(fix_data, {'_id'})
+        __id = unrm.get_one(fix_data, {'_id' : 1})
         fix_data['user'] = user_total
 
         if __id:
@@ -92,7 +91,7 @@ for item in area:
                         '$lte' : re_time[i]['end']
                     }
                 }
-                create_role = ucrm.get_one(search, {'_id', 'userlist'})
+                create_role = ucrm.get_one(search, {'_id' : 1, 'userlist' : 1})
 
                 user_fix = {}
                 if create_role:
@@ -108,7 +107,7 @@ for item in area:
                     'plat' : plat,
                     'ts' : re_time[i]['start']
                 }
-                __id = unrm.get_one(fix_data, {'_id'})
+                __id = unrm.get_one(fix_data, {'_id' : 1})
                 fix_data[str(i) + '_retention'] = len(user_fix)
                 
                 if __id:

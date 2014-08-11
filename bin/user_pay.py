@@ -18,8 +18,7 @@ FORMAT = '%Y-%m-%d'
 print time.ctime(), __file__, ' start...'
 
 if len(sys.argv) == 1:
-#    now = time.strftime(FORMAT, time.localtime())
-    now = '2014-7-30'
+    now = time.strftime(FORMAT, time.localtime())
 else:
     now = sys.argv[1] 
 
@@ -100,7 +99,7 @@ for d in data:
             'uid' : str(uid)
         }
 
-        pay_doc  = apm.get_one(search, {"_id", "firstPayGrade"})
+        pay_doc  = apm.get_one(search, {"_id" : 1, "firstPayGrade" : 1})
         if  pay_doc:
             first_pay_grade = pay_doc['firstPayGrade']
         else:
@@ -135,7 +134,7 @@ for d in data:
             'ts' : start
     }
 
-    __id = apm.get_one(fix_data, {'_id', 'game'})
+    __id = apm.get_one(fix_data, {'_id' : 1, 'game' : 1})
     
     fix_data ={
         'game' : game,

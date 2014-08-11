@@ -16,8 +16,7 @@ from models import userloginmodel, usercreaterolemodel
 print time.ctime(), __file__, ' start...'
 FORMAT = '%Y-%m-%d'
 if len(sys.argv) == 1:
-#    now = time.strftime(FORMAT, time.localtime())
-    now = '2014-8-2'
+    now = time.strftime(FORMAT, time.localtime())
 else:
     now = sys.argv[1] 
 today = time.strptime(now, FORMAT)
@@ -42,11 +41,11 @@ for item in area:
         reg_total = 0
         login_total = 0
 
-        reg_total_count = ucrm.get_one(search, {'_id', 'count'})
+        reg_total_count = ucrm.get_one(search, {'_id' : 1, 'count' : 1})
         if reg_total_count:
             reg_total = reg_total_count['count']
         
-        user_login_count = ulm.get_one(search, {'_id', 'count'})
+        user_login_count = ulm.get_one(search, {'_id' : 1, 'count' : 1})
         if user_login_count:
             login_total = user_login_count['count']
         
@@ -56,7 +55,7 @@ for item in area:
             'plat' : plat,
             'ts' : start
         }
-        __id = uadm.get_one(fix_data, {'_id', 'user'})
+        __id = uadm.get_one(fix_data, {'_id' : 1, 'user' : 1})
         if login_total < 1:
             new_ac_rate = 0
             old_ac_rate = 0

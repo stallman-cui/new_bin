@@ -5,7 +5,7 @@
 # 2014-07-25
 # author: zwcui   cuizhw@millionhero.com
 
-import time, sys, json
+import time, sys
 reload(sys)
 sys.path.append('..')
 sys.setdefaultencoding('utf-8')
@@ -15,8 +15,7 @@ from models import gamelogmodel, areamodel, coindaymodel, cointypemodel
 print time.ctime(), __file__, ' start...'
 FORMAT = '%Y-%m-%d'
 if len(sys.argv) == 1:
-#    now = time.strftime(FORMAT, time.localtime())
-    now = '2014-8-2'
+    now = time.strftime(FORMAT, time.localtime())
 else:
     now = sys.argv[1] 
 today = time.strptime(now, FORMAT)
@@ -68,8 +67,6 @@ for d in data:
                 coin[game][area][plat][coin_type] = 0
             coin[game][area][plat][coin_type] += d['data']['amount']
 
-#print json.dumps(coin, indent=2)
-
 for kgame, vgame in coin.items():
     for karea, varea in vgame.items():
         for kplat, vplat in varea.items():
@@ -83,7 +80,7 @@ for kgame, vgame in coin.items():
                     'ts' : start,
                     'type' : ktype
                 }
-                __id = ctm.get_one(search, {'_id'})
+                __id = ctm.get_one(search, {'_id' : 1})
                 search['coin'] = abs(vtype)
                 if __id:
                     mid = str(__id['_id'])
@@ -97,7 +94,7 @@ for kgame, vgame in coin.items():
                 'plat' : str(kplat),
                 'ts' : start,
             }
-            __id = cdm.get_one(search, {'_id'})
+            __id = cdm.get_one(search, {'_id' : 1})
             search['coin'] = abs(plat_coin)
             if __id:
                 mid = str(__id['_id'])

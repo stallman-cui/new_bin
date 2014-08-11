@@ -16,8 +16,7 @@ from models import usercreaterolemodel, userpaytracemodel
 print time.ctime(), __file__, ' start...'
 FORMAT = '%Y-%m-%d'
 if len(sys.argv) == 1:
-#    now = time.strftime(FORMAT, time.localtime())
-    now = '2014-8-2'
+    now = time.strftime(FORMAT, time.localtime())
 else:
     now = sys.argv[1] 
 today = time.strptime(now, FORMAT)
@@ -115,7 +114,7 @@ for item in area:
             'ts' : pay_time[0]['start']
         }
 
-        __id = uptm.get_one(fix_data, {'_id'})
+        __id = uptm.get_one(fix_data, {'_id' : 1})
         ts = pay_time[0]['start']
         fix_data['create_role_count'] = 0
         fix_data['pay_user_count'] = 0
@@ -159,7 +158,7 @@ for item in area:
                     'plat' : plat,
                     'ts' : pay_time[i]['start']
                 }
-                __id = uptm.get_one(fix_data, {'_id'})
+                __id = uptm.get_one(fix_data, {'_id' : 1})
                 fix_data[str(i) + '_retention'] = len(user_fix)
                 if __id:
                     id = str(__id['_id'])

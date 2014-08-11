@@ -16,8 +16,7 @@ from models import mainlineusermodel, mainlinemodel
 print time.ctime(), __file__, ' start...'
 FORMAT = '%Y-%m-%d'
 if len(sys.argv) == 1:
-#    now = time.strftime(FORMAT, time.localtime())
-    now = '2014-8-2'
+    now = time.strftime(FORMAT, time.localtime())
 else:
     now = sys.argv[1] 
 today = time.strptime(now, FORMAT)
@@ -94,7 +93,7 @@ for d in data:
         'taskid' : taskid
     }
     
-    re = mum.get_one(search, {'acceptuserlist', 'finishuserlist'})
+    re = mum.get_one(search, {'acceptuserlist' : 1, 'finishuserlist' : 1})
     if 'trunk_task_accept' == op_code:
         if re and 'acceptuserlist' in re.keys():
             yes_accept_user[game][area][plat][taskid] = re['acceptuserlist']
@@ -117,7 +116,7 @@ for kgame, vgame in mainline.items():
                     'taskid' : ktask
                 }
 
-                __id = mum.get_one(search, {'_id'})
+                __id = mum.get_one(search, {'_id' : 1})
                 acc = {}
                 fin = {}
                 try:
@@ -142,7 +141,7 @@ for kgame, vgame in mainline.items():
                     'ts' : start,
                     'taskid' : ktask
                 }
-                __id = mm.get_one(fix_data, {'_id'})
+                __id = mm.get_one(fix_data, {'_id' : 1})
                 fix_data['name'] = vtask
                 fix_data['accept_user'] = len(acc)
                 fix_data['finish_user'] = len(fin)

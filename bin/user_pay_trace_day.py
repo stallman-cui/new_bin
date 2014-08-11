@@ -16,8 +16,7 @@ from models import usercreaterolemodel, userpaytracemodel, userpaytracedaymodel
 print time.ctime(), __file__, ' start...'
 FORMAT = '%Y-%m-%d'
 if len(sys.argv) == 1:
-#    now = time.strftime(FORMAT, time.localtime())
-    now = '2014-8-2'
+    now = time.strftime(FORMAT, time.localtime())
 else:
     now = sys.argv[1] 
 today = time.strptime(now, FORMAT)
@@ -145,7 +144,7 @@ for item in area:
             'ts' : start
         }
 
-        __id = uptdm.get_one(fix_data, {'_id'})
+        __id = uptdm.get_one(fix_data, {'_id' : 1})
 
         fix_data['old_pay_user_count'] = len(old_user_pay_order)
         fix_data['old_pay_user_count_a'] = 0
