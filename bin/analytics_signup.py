@@ -36,7 +36,10 @@ data = glm.get_list(search)
 
 for d in data:
     area = d['area']
-    plat = d['data']['corpid']
+    try:
+        plat = d['data']['corpid']
+    except KeyError:
+        continue
     if not area in game_info.keys():
         area_info = am.get_by_idstr(area)
         game_info[area] = area_info['game']
