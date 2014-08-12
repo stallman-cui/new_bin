@@ -3,8 +3,7 @@
 # 2014-07-30
 # author: zwcui   cuizhw@millionhero.com
 
-import time
-import md5
+import time, hashlib
 import pycurl, urllib, json, cStringIO
 from common.config import db_config
 
@@ -25,7 +24,7 @@ class PaymentModel:
         #print 'param: ', json.dumps(param, indent=3)
         host = 'https://pay.millionhero.com'
         ts = str(int(time.time()))
-        sign = md5.new(url + ts + self.__secret ).hexdigest()
+        sign = hashlib.md5(url + ts + self.__secret ).hexdigest()
         url = '{0}{1}?ts={2}&sign={3}&{4}'.format(host, url, ts, sign, urllib.urlencode(query))
 
         self.__ch.setopt(pycurl.URL, url)
