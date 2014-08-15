@@ -19,12 +19,10 @@ class MongoModel:
         self.conn = self.connection(name)
          
     def get_db(self):
-        #pass
-        return 'analytics'
-        
+        pass
+
     def get_collection(self):
-        #pass
-        return 'gamelog'
+        pass
 
     def insert(self, data):
         db = self.prefix + self.get_db()
@@ -43,16 +41,14 @@ class MongoModel:
         return self.conn[db][coll].update(search, {'$set': change})
     
     def get_list(self, search = {}, display = {}):
-        #print 'get_list: ', search, display
         db = self.prefix + self.get_db()
         coll = self.get_collection()
 
         if len(display):
-            return self.conn[db][coll].find(search, display)
-        return self.conn[db][coll].find(search)
+            return self.conn[db][coll].find(search, display, timeout = False)
+        return self.conn[db][coll].find(search, timeout = False)
 
     def get_one(self, search = {}, display = {}):
-        #print 'get_one: ', search, display
         db = self.prefix + self.get_db()
         coll = self.get_collection()
 
@@ -60,44 +56,5 @@ class MongoModel:
             return self.conn[db][coll].find_one(search, display)
         return self.conn[db][coll].find_one(search)
 
-if __name__ == '__main__':
-    test = MongoModel()
-    search = {
-        'op.code' : 'yuanbao_logchange',
-        'ts' : {'$gte' : 1406563200, '$lte' : 1406649599}
-    }
-
-    
-    fix_data ={
-        'game': 'dl',
-        'area': '53bdefebdbdb674228a5018b', 
-        'uid': '140531009140149478', 
-        'ts': 1406563200, 
-        'plat': 2001
-    }
-
-
-    display = {
-        #'_id',
-        #'area',
-        #'op.code',
-        #'data.extra'
-    }
-    '''
-    search_str = '53ce33bcf008b679dda5c220'
-    doc = test.get_one(search_str, search = search, display = display)
-    #print doc
-    
-    fix_data = {
-        'op.code' : 'my_op.code'
-    }
-    test.update(search_str, search = search, change = fix_data)
-    '''
-
-    documents = test.get_list(search)
-
-
-    for doc in documents:
-        print doc
-
-
+    def __del__(self):
+        self.conn.close()
