@@ -37,7 +37,11 @@ data = glm.get_list(search)
 
 for d in data:
     area = d['area']
-    plat = d['data']['corpid']
+    # so stupid, why not uniform naming?
+    if d['op']['code'] == 'login_logcount':
+        plat = d['data']['corpid']
+    else:
+        plat = d['data']['CorpId']
     acct = d['data']['acct']
     log_type = d['data']['type']
     if not area in game_info.keys():
