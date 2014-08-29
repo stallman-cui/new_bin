@@ -52,17 +52,15 @@ for d in data:
     # If it is found int the first time
     if not user.get(uid, 0):
         search = {
-            'game_tag' : game,
-            'plat_id' : plat,
-            'area_id' : area,
-            'account' : {'id' : '', 'name' : ''},
-            'char' : {'id' : uid, 'name' : ''},
-            'info' : {'acct' : 1}
+            'game' : game,
+            'plat' : plat,
+            'area' : area,
+            'uid' : uid
         }
         
         # Search the data from local's account collection or
         # the remote server with curl
-        acm = accountmodel.AccountModel()
+        acm = accountmodel.AccountUserModel("002_h_user")
         try:
             userdata = acm.get_one(search)
         except Exception, e:
@@ -70,9 +68,9 @@ for d in data:
             print(e.message)
             continue
         if userdata:
-            rest_yuanbao = userdata['char']['base_info']['rest_yuanbao']
-            reg_time = userdata['char']['base_info']['birthday']
-            recent_login = userdata['char']['base_info']['recent_login']
+            rest_yuanbao = userdata['rest_yuanbao']
+            reg_time = userdata['birthday']
+            recent_login = userdata['recent_login']
         else:
             rest_yuanbao = reg_time = recent_login = 0
         # search all the record of use yuanbao
