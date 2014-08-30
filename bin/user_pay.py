@@ -12,7 +12,7 @@ reload(sys)
 sys.path.append('..')
 sys.setdefaultencoding('utf-8')
 from models import gamelogmodel, platmodel, areamodel
-from models import analyticspaymodel, accountmodel
+from models import analyticspaymodel, accountusermodel
 
 FORMAT = '%Y-%m-%d'
 print time.ctime(), __file__, ' start...'
@@ -60,7 +60,7 @@ for d in data:
         
         # Search the data from local's account collection or
         # the remote server with curl
-        acm = accountmodel.AccountUserModel("002_h_user")
+        acm = accountusermodel.AccountUserModel("002_h_user")
         try:
             userdata = acm.get_one(search)
         except Exception, e:

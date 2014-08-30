@@ -41,6 +41,9 @@ for d in data:
     # Check if the area is not set one area is only owned by one game
     if not area in game_info.keys():
         area_info = am.get_by_idstr(area)
+        ## this area was deleted
+        if not area_info:
+            continue
         game_info[area] = area_info['game']
         game = game_info[area]
         if not game in server_start.keys():
