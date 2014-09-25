@@ -50,6 +50,8 @@ for d in data:
 
     if area not in game_info.keys():
         area_info = am.get_by_idstr(area)
+        if not area_info:
+            continue
         game_info[area] = area_info['game']
         game = game_info[area]
 
@@ -102,6 +104,7 @@ for kgame, vgame in gamecopy.items():
         for kplat, vplat in varea.items():
             for kcopy, vcopy in vplat.items():
                 search = {
+                    'game' : kgame,
                     'area' : karea,
                     'plat' : str(kplat), 
                     'ts' : start,
