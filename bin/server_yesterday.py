@@ -82,13 +82,13 @@ for item in area:
             # 充值金额
             apru_temp['rmb'] = 0
             # 充值用户
-            user_pay = 0
+            user_pay = {}
             for platdata in pmresult:
                 apru_temp['nodup'] += 1
                 apru_temp['rmb'] += float(platdata['rmb'])
-                user_pay += 1
+                user_pay[platdata["user"]] = 1
             # 充值用户数 
-            apru_temp['count'] = user_pay
+            apru_temp['count'] = len(user_pay)
             apru = round(float(apru_temp['rmb']) / apru_temp['nodup'], 2)
         else:
             apru = "can't get data!"
