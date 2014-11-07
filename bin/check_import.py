@@ -4,8 +4,14 @@ import time, sys
 reload(sys)
 sys.path.append('..')
 sys.setdefaultencoding('utf-8')
+
+if len(sys.argv) >= 2:
+    server = "002_h_user"
+else:
+    server = ""
+
 from models import gamelogmodel
-glm = gamelogmodel.GameLogModel()
+glm = gamelogmodel.GameLogModel(server)
 
 FORMAT = '%Y-%m-%d %H:%M'
 now = sys.argv[1] 
