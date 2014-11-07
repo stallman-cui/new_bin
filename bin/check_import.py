@@ -5,13 +5,18 @@ reload(sys)
 sys.path.append('..')
 sys.setdefaultencoding('utf-8')
 
-if len(sys.argv) >= 2:
-    server = "002_h_user"
+if len(sys.argv) < 2:
+    print "usage: check_import.py start_time interval"
+    print "for example: '2014-11-07 12:00' 5 , the default interval is 5 min " 
+    exit()
 else:
-    server = ""
+    interval = int(sys.argv[2])
+    if not interval:
+        interval = 5 * 60
+    interval = interval * 60
 
 from models import gamelogmodel
-glm = gamelogmodel.GameLogModel(server)
+glm = gamelogmodel.GameLogModel()
 
 FORMAT = '%Y-%m-%d %H:%M'
 now = sys.argv[1] 
@@ -32,9 +37,9 @@ while 1:
 
     check_time[i] = {
         'start' : start,
-        'end' : start + 3600,
+        'end' : start + interval,
     }
-    start += 3600
+    start += interval
     i = i + 1
 
 for i in range(len(check_time)):
