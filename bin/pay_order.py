@@ -44,6 +44,8 @@ for d in data:
     plat = d['data']['CorpId']
     if not area in game_info.keys():
         area_info = am.get_by_idstr(area)
+        if not area_info:
+            continue
         game_info[area] = area_info['game']
         game = game_info[area]
 

@@ -15,7 +15,7 @@ sys.setdefaultencoding('utf-8')
 from models import areamodel, servermodel, paymentmodel
 from models import usersignupmodel, userloginmodel, usercreaterolemodel
 
-print time.ctime(), __file__, ' start...'
+print time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())), __file__, ' start...'
 FORMAT = '%Y-%m-%d'
 if len(sys.argv) == 1:
     now = time.strftime(FORMAT, time.localtime())
@@ -57,6 +57,9 @@ for item in area:
         if user_login_count:
             active = user_login_count['count']
             
+        if reg == 0 and create_role == 0 and active == 0:
+            continue
+
         pm = paymentmodel.PaymentModel()
         search = {
             'game' : item['game'],
@@ -122,4 +125,4 @@ for item in area:
         else:
             sm.insert(fix_data)
 
-print time.ctime(), __file__, ' stop...'
+print time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())), __file__, ' stop...'
